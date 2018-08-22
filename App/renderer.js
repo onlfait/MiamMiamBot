@@ -8,21 +8,35 @@ const pkg = require('./package.json')
 const $ports = document.getElementById('ports')
 const $refreshPorts = document.getElementById('refreshPorts')
 const $connect = document.getElementById('connect')
+const $error = document.getElementById('error')
+const $errorMessage = document.getElementById('error-message')
+const $errorHide = document.getElementById('error-hide')
 
 document.title = `${pkg.name} - v${pkg.version}`
 
 $refreshPorts.addEventListener('click', updatePorts, false)
 $connect.addEventListener('click', connect, false)
+$errorHide.addEventListener('click', hideError, false)
+
+function showError (message) {
+  $errorMessage.textContent = message
+  $error.style.display = 'block'
+}
+
+function hideError () {
+  $error.style.display = 'none'
+  $errorMessage.textContent = ''
+}
+
+hideError()
 
 function updatePorts () {
   serialport.list((err, ports) => {
-    console.log('ports', ports);
+    console.log('ports', ports)
+    hideError()
 
     if (err) {
-      document.getElementById('error').textContent = err.message
-      return
-    } else {
-      document.getElementById('error').textContent = ''
+      return showError(err.message)
     }
 
     if (ports.length === 0) {
@@ -59,7 +73,8 @@ function connect () {
     return
   }
 
-  console.log($ports.value);
+  console.log($ports.value)
+  showError($ports.value)
 }
 
 updatePorts();
