@@ -11,6 +11,7 @@ const $connect = document.getElementById('connect')
 const $error = document.getElementById('error')
 const $errorMessage = document.getElementById('error-message')
 const $errorHide = document.getElementById('error-hide')
+const $connection = document.getElementById('connection')
 
 document.title = `${pkg.name} - v${pkg.version}`
 
@@ -73,8 +74,15 @@ function connect () {
     return
   }
 
-  console.log($ports.value)
-  showError($ports.value)
+  // console.log($ports.value)
+  // showError($ports.value)
+  let sp = serialport($ports.value, { baudRate: 115200 }, function (error) {
+    if (error) {
+      return showError(error)
+    }
+    console.log('connecté:', sp.path, sp.baudRate)
+    $connection.style.display = 'none'
+  })
 }
 
 updatePorts();
