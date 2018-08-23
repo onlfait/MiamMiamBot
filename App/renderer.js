@@ -2,8 +2,10 @@
 // be executed in the renderer process for that window.
 // All of the Node.js APIs are available in this process.
 
-const serialport = require('serialport')
 const pkg = require('./package.json')
+
+const SerialPort = require('serialport')
+const Readline = require('@serialport/parser-readline')
 
 const $ports = document.getElementById('ports')
 const $refreshPorts = document.getElementById('refreshPorts')
@@ -12,6 +14,9 @@ const $error = document.getElementById('error')
 const $errorMessage = document.getElementById('error-message')
 const $errorHide = document.getElementById('error-hide')
 const $connection = document.getElementById('connection')
+
+let port = null
+let parser = null
 
 document.title = `${pkg.name} - v${pkg.version}`
 
@@ -32,7 +37,7 @@ function hideError () {
 hideError()
 
 function updatePorts () {
-  serialport.list((err, ports) => {
+  SerialPort.list((err, ports) => {
     console.log('ports', ports)
     hideError()
 
@@ -68,21 +73,24 @@ function setPorts (ports) {
 }
 
 function connect () {
-  let port = $ports.value
+  let path = $ports.value
 
-  if (port === 'null') {
+  if (path === 'null') {
     return
   }
 
   // console.log($ports.value)
   // showError($ports.value)
-  let sp = serialport($ports.value, { baudRate: 115200 }, function (error) {
+  port = SerialPort(path, { baudRate: 115200 }, error => {
     if (error) {
       return showError(error)
     }
-    console.log('connecté:', sp.path, sp.baudRate)
+    console.log('connecté:', port.path, port.baudRate)
     $connection.style.display = 'none'
   })
+
+  parser = port.pipe(new Readline({ delimiter: '\r\n' }))
+  parser.on('data', console.log)
 }
 
 updatePorts();
