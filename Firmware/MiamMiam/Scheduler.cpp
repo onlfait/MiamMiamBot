@@ -60,8 +60,10 @@ void Scheduler::setAlarmCallback(Callback callback) {
 }
 
 bool Scheduler::begin() {
+  // DEBUG start
   RTC.begin();
   RTC.adjust(DateTime(2018, 8, 20, 17, 40, 55));
+  // DEBUG end
 
   return RTC.begin() && RTC.isrunning();
 }
