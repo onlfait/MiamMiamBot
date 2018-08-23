@@ -91,24 +91,29 @@ void Scheduler::watch() {
 void Scheduler::printAlarm (int i) {
   Alarm alarm = alarms[i];
 
-  Serial.print("Alarme ");
+  Serial.print("{ ");
+  Serial.print("type: alarm, ");
+
+  Serial.print("alarm: ");
   printTwoDigits(i + 1);
-  Serial.print(" | ");
+  Serial.print(", ");
 
+  Serial.print("hour: ");
   printTwoDigits(alarm.hour);
-  Serial.print(":");
+  Serial.print(", ");
+
+  Serial.print("minute: ");
   printTwoDigits(alarm.minute);
-  Serial.print(" | ");
+  Serial.print(", ");
 
-  Serial.print("quantité: ");
+  Serial.print("quantity: ");
   printTwoDigits(alarm.quantity);
-  Serial.print(" | ");
+  Serial.print(", ");
 
-  if (alarm.enabled) {
-    Serial.println("activée");
-  } else {
-    Serial.println("desactivée");
-  }
+  Serial.print("enabled: ");
+  Serial.print(alarm.enabled ? "true" : "false");
+
+  Serial.println(" }");
 }
 
 void Scheduler::printAlarms () {
@@ -120,18 +125,31 @@ void Scheduler::printAlarms () {
 void Scheduler::printCurrentTime () {
   DateTime now = RTC.now();
 
-  printTwoDigits(now.day());
-  Serial.print("/");
-  printTwoDigits(now.month());
-  Serial.print("/");
-  Serial.print(now.year(), DEC);
+  Serial.print("{ ");
+  Serial.print("type: time, ");
 
-  Serial.print(" ");
+  Serial.print("day: ");
+  printTwoDigits(now.day());
+  Serial.print(", ");
+
+  Serial.print("month: ");
+  printTwoDigits(now.month());
+  Serial.print(", ");
+
+  Serial.print("year: ");
+  Serial.print(now.year(), DEC);
+  Serial.print(", ");
+
+  Serial.print("hour: ");
   printTwoDigits(now.hour());
-  Serial.print(":");
+  Serial.print(", ");
+
+  Serial.print("minute :");
   printTwoDigits(now.minute());
-  Serial.print(":");
+  Serial.print(", ");
+
+  Serial.print("second: ");
   printTwoDigits(now.second());
 
-  Serial.println();
+  Serial.println(" }");
 }
