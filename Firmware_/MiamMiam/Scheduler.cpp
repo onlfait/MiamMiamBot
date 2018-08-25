@@ -79,8 +79,6 @@ void Scheduler::watch() {
     }
 
     if (alarm.hour == now.hour() && alarm.minute == now.minute()) {
-      Serial.print("> ");
-      printAlarm(i);
       lastAlarm = alarm;
       lastAlarmDay = now.day();
       _callback(alarm.quantity);
@@ -92,41 +90,47 @@ void Scheduler::printAlarm (int i) {
   Alarm alarm = alarms[i];
 
   Serial.print("{ ");
-  Serial.print("type: alarm, ");
 
-  Serial.print("alarm: ");
-  printTwoDigits(i + 1);
+  Serial.print("index: ");
+  Serial.print(i);
   Serial.print(", ");
 
   Serial.print("hour: ");
-  printTwoDigits(alarm.hour);
+  Serial.print(alarm.hour);
   Serial.print(", ");
 
   Serial.print("minute: ");
-  printTwoDigits(alarm.minute);
+  Serial.print(alarm.minute);
   Serial.print(", ");
 
   Serial.print("quantity: ");
-  printTwoDigits(alarm.quantity);
+  Serial.print(alarm.quantity);
   Serial.print(", ");
 
   Serial.print("enabled: ");
   Serial.print(alarm.enabled ? "true" : "false");
 
-  Serial.println(" }");
+  Serial.print(" }");
 }
 
 void Scheduler::printAlarms () {
-  for (int i = 0; i < ALARMS_COUNT; i++) {
+  Serial.print("{ ");
+  Serial.print("type: \"alarms\", ");
+  Serial.print("alarms: [ ");
+  for (int i = 0; i < ALARMS_COUNT - 1; i++) {
     printAlarm(i);
+    if (i < ALARMS_COUNT) {
+      Serial.print(", ");
+    }
   }
+  Serial.println(" ] }");
 }
 
 void Scheduler::printCurrentTime () {
   DateTime now = RTC.now();
 
   Serial.print("{ ");
-  Serial.print("type: time, ");
+  Serial.print("type: \"time\", ");
 
   Serial.print("day: ");
   printTwoDigits(now.day());
