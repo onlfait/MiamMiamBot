@@ -6,7 +6,10 @@
 */
 #include "CommandLine.h"
 
-CommandLine::CommandLine() { }
+CommandLine::CommandLine() {
+  _commandsCount = 0;
+  _argsCount = 0;
+}
 
 void CommandLine::begin() {
   while (!Serial);
@@ -18,9 +21,16 @@ void CommandLine::begin(int baudRate) {
   Serial.begin(baudRate);
 }
 
+void CommandLine::addCommand(const char* name, CommandCallback func) {
+  if (_commandsCount < MAX_COMMANDS) {
+    Command command = { name, func };
+    _commands[_commandsCount++] = command;
+  }
+}
+
 void CommandLine::_parse () {
   char *argument;
-  int counter = 0;
+  _argsCount = 0;
   char line[LINE_BUF_SIZE + 1];
 
   strcpy(line, _line);
@@ -28,16 +38,25 @@ void CommandLine::_parse () {
   memset(_args, 0, sizeof(_args));
 
   while (argument != NULL) {
-    if (counter < MAX_NUM_ARGS) {
+    if (_argsCount < MAX_NUM_ARGS) {
       if (strlen(argument) < ARG_BUF_SIZE) {
-        strcpy(_args[counter], argument);
+        strcpy(_args[_argsCount], argument);
         argument = strtok(NULL, " ");
-        counter++;
+        _argsCount++;
       } else {
         break;
       }
     } else {
       break;
+    }
+  }
+}
+
+void CommandLine::executeCommand () {
+  for (int i = 0; i < _commandsCount; i++) {
+    Command command = _commands[i];
+    if (strcmp(_args[0], command.name) == 0) {
+        command.func();
     }
   }
 }
@@ -79,6 +98,10 @@ bool CommandLine::lineMatch (const char* input) {
 
 bool CommandLine::argMatch (int index, const char* input) {
   return strcmp(_args[index], input) == 0;
+}
+
+int CommandLine::getArgsCount () {
+  return _argsCount;
 }
 
 char* CommandLine::getArg (int index) {
