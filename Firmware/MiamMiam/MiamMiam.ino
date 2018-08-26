@@ -28,10 +28,15 @@ void setup () {
   }
 
   // Ajout des fonctions de rappel pour chaque commande
+  commandLine.undefinedCommand(undefinedCommand);
+  commandLine.addCommand("fingerprint", fingerprint);
   commandLine.addCommand("setDateTime", setDateTime);
   commandLine.addCommand("getDateTime", getDateTime);
   commandLine.addCommand("setAlarm", setAlarm);
   commandLine.addCommand("getAlarm", getAlarm);
+  commandLine.addCommand("setMotor", setMotor);
+  commandLine.addCommand("getMotor", getMotor);
+  commandLine.addCommand("save", save);
 
   // Démarrage du magasin (config)
   store.begin();
@@ -50,6 +55,9 @@ void setup () {
 
   // Enregistre la fonction de rappel pour les alarmes
   scheduler.setAlarmCallback(alarmCallback);
+
+  // Envoie l'emprinte digital
+  fingerprint();
 }
 
 // -----------------------------------------------------------------------------
@@ -63,6 +71,17 @@ void loop () {
 // -----------------------------------------------------------------------------
 // Les commands...
 // -----------------------------------------------------------------------------
+
+void undefinedCommand () {
+  commandLine.send(
+    F("error|Commande non reconnue: %s.\n"),
+    commandLine.getLine()
+  );
+}
+
+void fingerprint () {
+  commandLine.send(F("MiamMiamBot|%s\n"), store.data.hash);
+}
 
 // Mise à jour de la date et l'heure
 // ex.: setDateTime|2018|8|20|17|40|55
@@ -83,6 +102,7 @@ void setDateTime () {
     commandLine.getArgAsInt(5),
     commandLine.getArgAsInt(6)
   ));
+  commandLine.send(F("ok\n"));
 }
 
 // Renvoie la date et l'heure courante
@@ -116,6 +136,8 @@ void setAlarm () {
     commandLine.getArgAsFloat(4)
   };
   scheduler.setAlarm(index, alarm);
+  store.setAlarm(index, alarm);
+  commandLine.send(F("ok\n"));
 }
 
 // ex.: getAlarm|0
@@ -130,6 +152,40 @@ void getAlarm () {
   }
   int index = commandLine.getArgAsInt(1);
   printAlarm(index, scheduler.getAlarm(index));
+}
+
+void setMotor () {
+  int argsCount = commandLine.getArgsCount();
+  if (argsCount != 4) {
+    commandLine.send(
+      F("error|Nombre d'argument attendus 4, reçu %u.\n"),
+      argsCount
+    );
+    return;
+  }
+  // TODO set motor...
+  MotorStruct motor = {
+    commandLine.getArgAsInt(1),
+    commandLine.getArgAsInt(2),
+    !!commandLine.getArgAsInt(3)
+  };
+  store.setMotor(motor);
+  commandLine.send(F("ok\n"));
+}
+
+void getMotor () {
+  MotorStruct motor = store.data.motor;
+  commandLine.send(
+    F("motor|%d|%d|%d\n"),
+    motor.steps,
+    motor.microstepping,
+    motor.inverse
+  );
+}
+
+void save () {
+  store.save();
+  commandLine.send(F("ok\n"));
 }
 
 // -----------------------------------------------------------------------------

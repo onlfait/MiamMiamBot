@@ -8,8 +8,7 @@
 
 EEPROMStoreStruct EEPROMStoreData = {
   EEPROM_STORE_HASH, // Store hash
-  200,               // Nombre de pas par tour du moteur
-  1,                 // microstepping (1, 2, 4, 8, 16)
+  { 200, 1, false }, // Motor { steps, microstepping, inverse }
   { 0, 0, 0 },       // Alarmes { hour, minute, quantity }
   { 0, 0, 0 },
   { 0, 0, 0 },
@@ -53,5 +52,24 @@ bool EEPROMStore::load () {
 void EEPROMStore::save () {
   for (int i = 0; i < sizeof(data); i++) {
     EEPROM.write(i, *((char*)&data + i));
+  }
+}
+
+void EEPROMStore::setMotor (MotorStruct motor) {
+  data.motor = motor;
+}
+
+void EEPROMStore::setAlarm (int index, AlarmStruct alarm) {
+  switch (index) {
+    case 0: data.alarm0 = alarm; break;
+    case 1: data.alarm1 = alarm; break;
+    case 2: data.alarm2 = alarm; break;
+    case 3: data.alarm3 = alarm; break;
+    case 4: data.alarm4 = alarm; break;
+    case 5: data.alarm5 = alarm; break;
+    case 6: data.alarm6 = alarm; break;
+    case 7: data.alarm7 = alarm; break;
+    case 8: data.alarm8 = alarm; break;
+    case 9: data.alarm9 = alarm; break;
   }
 }

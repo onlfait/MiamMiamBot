@@ -11,13 +11,18 @@
 #include <EEPROM.h>
 #include "Scheduler.h"
 
-#define EEPROM_STORE_HASH "#yol2"
+#define EEPROM_STORE_HASH "#yolo"
 #define EEPROM_STORE_HASH_SIZE 6
 
 typedef struct {
-  char hash[EEPROM_STORE_HASH_SIZE];
-  int stepsByRotation;
+  int steps;
   int microstepping;
+  bool inverse;
+} MotorStruct;
+
+typedef struct {
+  char hash[EEPROM_STORE_HASH_SIZE];
+  MotorStruct motor;
   AlarmStruct alarm0;
   AlarmStruct alarm1;
   AlarmStruct alarm2;
@@ -36,6 +41,8 @@ class EEPROMStore {
     void begin();
     bool load();
     void save();
+    void setMotor(MotorStruct motor);
+    void setAlarm(int index, AlarmStruct alarm);
     EEPROMStoreStruct data;
   private:
     bool _validate();
