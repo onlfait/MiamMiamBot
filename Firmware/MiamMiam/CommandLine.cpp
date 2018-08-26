@@ -56,6 +56,10 @@ void CommandLine::addCommand(const char* name, CommandCallback func) {
   }
 }
 
+void CommandLine::undefinedCommand(CommandCallback func) {
+  _undefinedCommand = func;
+}
+
 void CommandLine::_parse () {
   char *argument;
   _argsCount = 0;
@@ -85,7 +89,11 @@ void CommandLine::executeCommand () {
     CommandStruct command = _commands[i];
     if (strcmp(_args[0], command.name) == 0) {
         command.func();
+        return;
     }
+  }
+  if (_undefinedCommand != NULL) {
+    _undefinedCommand();
   }
 }
 

@@ -36,6 +36,7 @@ class CommandLine {
     CommandLine();
     void begin();
     void begin(int baudRate);
+    void undefinedCommand(CommandCallback func);
     void addCommand(const char* name, CommandCallback func);
     bool read();
     void executeCommand();
@@ -53,6 +54,7 @@ class CommandLine {
     char _line[LINE_BUF_SIZE + 1];
     char _args[MAX_NUM_ARGS][ARG_BUF_SIZE];
     CommandStruct _commands[MAX_COMMANDS];
+    CommandCallback _undefinedCommand;
     int _argsCount;
     int _commandsCount;
     const char* _separator;
