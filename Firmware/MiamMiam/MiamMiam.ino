@@ -22,23 +22,23 @@ void setup () {
   commandLine.addCommand("getDateTime", getDateTime);
   // Enregistre la fonction de rappel pour les alarmes
   scheduler.setAlarmCallback(alarmCallback);
+  // Démarrage du plannificateur
+  if (!scheduler.begin()) {
+    commandLine.send(F("Le module RTC ne fonctionne pas correctement..."));
+    commandLine.send(F("Verifiez le câblage!"));
+    while (1);
+  }
+  // DEBUG -------------------------
   AlarmStruct alarm1 = { 17, 40, 1 };
-  AlarmStruct alarm2 = { 17, 40, 2 };
-  AlarmStruct alarm3 = { 17, 41, 3 };
-  AlarmStruct alarm4 = { 17, 42, 0 };
+  AlarmStruct alarm2 = { 17, 40, 2 }; // skipped -> same as alarm 1
+  AlarmStruct alarm3 = { 17, 41, 555.75 };
+  AlarmStruct alarm4 = { 17, 42, 0 }; // skipped -> quantity == 0
   AlarmStruct alarm5 = { 17, 43, 5 };
   scheduler.setAlarm(0, alarm1);
   scheduler.setAlarm(1, alarm2);
   scheduler.setAlarm(2, alarm3);
   scheduler.setAlarm(3, alarm4);
   scheduler.setAlarm(4, alarm5);
-  // Démarrage du plannificateur
-  if (!scheduler.begin()) {
-    Serial.println(F("Le module RTC ne fonctionne pas correctement..."));
-    Serial.println(F("Verifiez le câblage!"));
-    while (1);
-  }
-  // DEBUG
   scheduler.setDateTime(DateTime(2018, 8, 20, 17, 40, 55));
 }
 
@@ -54,7 +54,7 @@ void loop () {
 // Les commands...
 // -----------------------------------------------------------------------------
 
-// Mise à jour de l'horloge
+// Mise à jour de la date et l'heure
 // ex.: setDateTime|2018|8|20|17|40|55
 void setDateTime () {
   int argsCount = commandLine.getArgsCount();
@@ -76,6 +76,7 @@ void setDateTime () {
   }
 }
 
+// Renvoie la date et l'heure courante
 void getDateTime () {
   DateTime now = scheduler.getDateTime();
   commandLine.send(
@@ -94,7 +95,12 @@ void getDateTime () {
 // -----------------------------------------------------------------------------
 
 // Appeler a chaque fois qu'une alarme est soulevée
-void alarmCallback (AlarmStruct alarm) {
-  Serial.print("ALARM: ");
-  Serial.println(alarm.quantity);
+void alarmCallback (int index, AlarmStruct alarm) {
+  commandLine.send(
+    F("alarm|%u|%u|%u|%s\n"),
+    index,
+    alarm.hour,
+    alarm.minute,
+    fts(alarm.quantity)
+  );
 }

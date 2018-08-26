@@ -32,7 +32,7 @@ typedef struct {
   AlarmStruct alarm;
 } LastAlarmStruct;
 
-typedef void (*AlarmCallback) (AlarmStruct alarm);
+typedef void (*AlarmCallback) (int index, AlarmStruct alarm);
 
 class Scheduler {
   public:

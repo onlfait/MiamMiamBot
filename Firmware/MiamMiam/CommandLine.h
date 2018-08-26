@@ -29,6 +29,8 @@ typedef struct {
   CommandCallback func;
 } CommandStruct;
 
+char* fts(float val); // float to string
+
 class CommandLine {
   public:
     CommandLine();

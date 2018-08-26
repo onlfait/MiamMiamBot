@@ -49,7 +49,7 @@ void Scheduler::watch () {
 
     if (alarm.hour == now.hour() && alarm.minute == now.minute()) {
       if (_alarmCallback != NULL) {
-        _alarmCallback(alarm);
+        _alarmCallback(i, alarm);
       }
       _lastAlarm = currentAlarm;
       return;

@@ -6,6 +6,11 @@
 */
 #include "CommandLine.h"
 
+char* fts (float val) {
+  char tmp[32];
+  return dtostrf(val, 3, 8, tmp);
+}
+
 CommandLine::CommandLine() {
   _commandsCount = 0;
   _argsCount = 0;
