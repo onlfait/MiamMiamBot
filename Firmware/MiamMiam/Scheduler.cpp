@@ -20,6 +20,10 @@ void Scheduler::setAlarm (int index, AlarmStruct alarm) {
   _alarms[index] = alarm;
 }
 
+AlarmStruct Scheduler::getAlarm (int index) {
+  return _alarms[index];
+}
+
 void Scheduler::setAlarmCallback (AlarmCallback alarmCallback) {
   _alarmCallback = alarmCallback;
 }

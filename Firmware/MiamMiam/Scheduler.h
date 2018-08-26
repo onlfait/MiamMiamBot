@@ -42,6 +42,7 @@ class Scheduler {
     DateTime getDateTime();
     void setDateTime(DateTime dateTime);
     void setAlarm(int index, AlarmStruct alarm);
+    AlarmStruct getAlarm(int index);
     void setAlarmCallback(AlarmCallback alarmCallback);
   private:
     AlarmCallback _alarmCallback;
