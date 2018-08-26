@@ -8,13 +8,13 @@
 #define COMMAND_LINE_H
 
 #include "Arduino.h"
+#include <stdarg.h>
 
 #define BAUD_RATE 115200
 
-#define CR       '\r'
-#define LF       '\n'
-#define SPACE    ' '
-#define NULLCHAR '\0'
+#define CR        '\r'
+#define LF        '\n'
+#define NULLCHAR  '\0'
 
 #define LINE_BUF_SIZE 128
 #define ARG_BUF_SIZE   64
@@ -27,7 +27,7 @@ typedef void (*CommandCallback) ();
 typedef struct {
   const char* name;
   CommandCallback func;
-} Command;
+} CommandStruct;
 
 class CommandLine {
   public:
@@ -37,6 +37,9 @@ class CommandLine {
     void addCommand(const char* name, CommandCallback func);
     bool read();
     void executeCommand();
+    void watch();
+    void send(const char *fmt, ...);
+    void send(const __FlashStringHelper *fmt, ...);
     char* getLine();
     bool lineMatch(const char* input);
     bool argMatch(int index, const char* input);
@@ -47,9 +50,10 @@ class CommandLine {
   private:
     char _line[LINE_BUF_SIZE + 1];
     char _args[MAX_NUM_ARGS][ARG_BUF_SIZE];
-    Command _commands[MAX_COMMANDS];
+    CommandStruct _commands[MAX_COMMANDS];
     int _argsCount;
     int _commandsCount;
+    const char* _separator;
     void _parse();
 };
 

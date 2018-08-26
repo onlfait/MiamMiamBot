@@ -9,6 +9,7 @@
 CommandLine::CommandLine() {
   _commandsCount = 0;
   _argsCount = 0;
+  _separator = "|";
 }
 
 void CommandLine::begin() {
@@ -21,9 +22,31 @@ void CommandLine::begin(int baudRate) {
   Serial.begin(baudRate);
 }
 
+void CommandLine::send (const char *fmt, ...) {
+  char buf[LINE_BUF_SIZE];
+  va_list args;
+  va_start(args, fmt);
+  vsnprintf(buf, LINE_BUF_SIZE, fmt, args);
+  va_end(args);
+  Serial.print(buf);
+}
+
+void CommandLine::send (const __FlashStringHelper *fmt, ...) {
+  char buf[LINE_BUF_SIZE];
+  va_list args;
+  va_start(args, fmt);
+  #ifdef __AVR__
+    vsnprintf_P(buf, LINE_BUF_SIZE, (const char *)fmt, args);
+  #else
+    vsnprintf(buf, LINE_BUF_SIZE, (const char *)fmt, args);
+  #endif
+  va_end(args);
+  Serial.print(buf);
+}
+
 void CommandLine::addCommand(const char* name, CommandCallback func) {
   if (_commandsCount < MAX_COMMANDS) {
-    Command command = { name, func };
+    CommandStruct command = { name, func };
     _commands[_commandsCount++] = command;
   }
 }
@@ -34,14 +57,14 @@ void CommandLine::_parse () {
   char line[LINE_BUF_SIZE + 1];
 
   strcpy(line, _line);
-  argument = strtok(line, " ");
+  argument = strtok(line, _separator);
   memset(_args, 0, sizeof(_args));
 
   while (argument != NULL) {
     if (_argsCount < MAX_NUM_ARGS) {
       if (strlen(argument) < ARG_BUF_SIZE) {
         strcpy(_args[_argsCount], argument);
-        argument = strtok(NULL, " ");
+        argument = strtok(NULL, _separator);
         _argsCount++;
       } else {
         break;
@@ -54,7 +77,7 @@ void CommandLine::_parse () {
 
 void CommandLine::executeCommand () {
   for (int i = 0; i < _commandsCount; i++) {
-    Command command = _commands[i];
+    CommandStruct command = _commands[i];
     if (strcmp(_args[0], command.name) == 0) {
         command.func();
     }
@@ -86,6 +109,12 @@ bool CommandLine::read () {
   }
 
   return false;
+}
+
+void CommandLine::watch () {
+  if (read()) {
+    executeCommand();
+  }
 }
 
 char* CommandLine::getLine () {
