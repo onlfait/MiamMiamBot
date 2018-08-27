@@ -1,8 +1,8 @@
 {
-  "name": "miamiam",
+  "name": "miamiambotapp",
   "version": "0.0.1",
-  "description": "MiamMiam App",
-  "main": "index.js",
+  "description": "MiamMiamBot App",
+  "main": "main.js",
   "scripts": {
     "start": "electron .",
     "install": "electron-rebuild"

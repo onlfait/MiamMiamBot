@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>MiamMiamBot App</title>
+    <link rel="stylesheet" type="text/css" href="../node_modules/@fortawesome/fontawesome-free/css/all.css">
+    <link rel="stylesheet" type="text/css" href="../node_modules/bulma/css/bulma.css">
+    <link rel="stylesheet" type="text/css" href="./index.css">
+  </head>
+  <body>
+    <section class="section is-small">
+      <div class="container">
+
+        <article id="error" class="message is-danger is-hidden">
+          <div class="message-header">
+            <p>Oups!</p>
+            <button class="delete"></button>
+          </div>
+          <div class="message-body"></div>
+        </article><!-- #error -->
+
+        <article id="connection" class="box">
+          <h1 class="title">
+            <i class="fas fa-phone"></i>
+            Connection
+          </h1>
+          <p class="subtitle">
+            1. Connectez vôtre MiaMiamBot à cet ordinateur.<br />
+            2. Cliquez sur le bouton "connecter" ci-dessous.
+          </p>
+          <button class="connect button is-primary is-large is-fullwidth">Connecter</button>
+        </article><!-- #connection -->
+
+        <article id="connecting" class="box is-hidden">
+          <h1 class="title">
+            <i class="fas fa-spinner fa-spin"></i>
+            Connection en cours...
+          </h1>
+          <p class="subtitle">
+            Veuillez patienter (2 minutes max)
+          </p>
+          <button class="disconnect button is-danger is-large is-fullwidth">Stop</button>
+        </article><!-- #connecting -->
+
+        <div id="connected" class="is-hidden">
+          <article id="clock" class="box">
+            <h1 class="title">
+              <i class="far fa-clock"></i>
+              Horloge
+            </h1>
+            <div class="columns is-size-4 has-text-centered has-text-grey-light">
+              <div class="column">
+                Date: <span class="date has-text-grey-dark">dd/mm/yyyy</span>
+              </div>
+              <div class="column">
+                Heure: <span class="time has-text-grey-dark">hh:mm:ss</span>
+              </div>
+            </div>
+            <button class="update button is-primary is-large is-fullwidth">Mise à jour</button>
+          </article><!-- #clock -->
+        </div><!-- #connected -->
+
+        <article id="alarms" class="box">
+          <h1 class="title">
+            <i class="far fa-bell"></i>
+            Alarmes
+          </h1>
+
+          <div class="alarm field is-horizontal">
+            <div class="field-body">
+              <div class="field is-expanded">
+                <div class="field has-addons">
+                  <p class="control">
+                    <button class="button is-static">
+                      <span class="icon is-small">
+                        <i class="fas fa-bell"></i>
+                      </span>
+                    </button>
+                  </p>
+                  <p class="control is-expanded">
+                    <input class="input" type="number" step="1" min="0" max="23" placeholder="Heure" title="Heure">
+                  </p>
+                  <p class="control is-expanded">
+                    <input class="input" type="number" step="1" min="0" max="59" placeholder="Minute" title="Minute">
+                  </p>
+                  <p class="control is-expanded">
+                    <input class="input" type="number" step="0.1" min="0.0" max="100.0" placeholder="Quantité" title="Quantité">
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div><!-- .alarm -->
+
+          <button class="update button is-primary is-large is-fullwidth">Mise à jour</button>
+        </article><!-- #alarms -->
+
+        <article id="motor" class="box">
+          <h1 class="title">
+            <i class="fas fa-cog"></i>
+            Moteur
+          </h1>
+          ...
+        </article><!-- #motor -->
+
+      </div>
+    </section>
+    <script>
+      require('./renderer.js')
+    </script>
+  </body>
+</html>

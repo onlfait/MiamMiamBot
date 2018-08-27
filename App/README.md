@@ -1,3 +1,3 @@
-# MiamMiam App
+# MiamMiamBot App
 
 ## [WIP] Work In Progress...
