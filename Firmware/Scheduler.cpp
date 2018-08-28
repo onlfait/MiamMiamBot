@@ -37,7 +37,13 @@ void Scheduler::setDateTime (DateTime dateTime) {
 }
 
 bool Scheduler::begin () {
-  return RTC.begin() && RTC.isrunning();
+  if (!RTC.begin()) {
+    return false;
+  }
+  if (!RTC.isrunning()) {
+    RTC.adjust(DateTime(F(__DATE__), F(__TIME__)));
+  }
+  return RTC.isrunning();
 }
 
 void Scheduler::watch () {
