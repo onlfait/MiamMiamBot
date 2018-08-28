@@ -208,8 +208,11 @@ function appendTemplate ($tpl, $target) {
 // -----------------------------------------------------------------------------
 const $alarms = document.getElementById('alarms')
 const $alarmslist = $alarms.querySelector('.alarms')
+const $alarmsUpdate = $alarms.querySelector('.update')
 const $alarmsDivs = new Map()
 const alarmsCount = 5
+
+$alarmsUpdate.addEventListener('click', updateRemoteAlarms, false)
 
 function appendAlarm (i) {
   const $alarm = appendTemplate($alarmTemplate, $alarmslist)
@@ -233,6 +236,29 @@ function setAlarm (args) {
     $icon.classList.add('fa-bell-slash')
     $icon.classList.remove('fa-bell')
   }
+}
+
+function setRemoteAlarm (args) {
+  if (!port) return
+  // setAlarm|index|heure|minute|quantity
+  const cmd = `setAlarm|${args.join('|')}\n`
+  console.log(cmd)
+  port.write(cmd)
+}
+
+function saveRemoteAlarms () {
+  if (!port) return
+  console.log('save')
+  port.write('save\n')
+}
+
+function updateRemoteAlarms (save=true) {
+  for (var i = 0; i < alarmsCount; i++) {
+    const [ $alarm, $icon, $hour, $minute, $quantity ] = $alarmsDivs.get(i)
+    setRemoteAlarm([i, $hour.value, $minute.value, $quantity.value])
+  }
+  save && saveRemoteAlarms()
+  getRemoteAlarms()
 }
 
 function getRemoteAlarms () {
