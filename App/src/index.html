@@ -45,6 +45,7 @@
         </article><!-- #connecting -->
 
         <div id="connected" class="is-hidden">
+
           <article id="clock" class="box">
             <h1 class="title">
               <i class="far fa-clock"></i>
@@ -60,14 +61,28 @@
             </div>
             <button class="update button is-primary is-large is-fullwidth">Mise à jour</button>
           </article><!-- #clock -->
+
+          <article id="alarms" class="box">
+            <h1 class="title">
+              <i class="far fa-bell"></i>
+              Alarmes
+            </h1>
+            <div class="alarms"></div>
+            <br />
+            <button class="update button is-primary is-large is-fullwidth">Mise à jour</button>
+          </article><!-- #alarms -->
+
         </div><!-- #connected -->
 
-        <article id="alarms" class="box">
+        <article id="motor" class="box">
           <h1 class="title">
-            <i class="far fa-bell"></i>
-            Alarmes
+            <i class="fas fa-cog"></i>
+            Moteur
           </h1>
+          ...
+        </article><!-- #motor -->
 
+        <template>
           <div class="alarm field is-horizontal">
             <div class="field-body">
               <div class="field is-expanded">
@@ -80,29 +95,19 @@
                     </button>
                   </p>
                   <p class="control is-expanded">
-                    <input class="input" type="number" step="1" min="0" max="23" placeholder="Heure" title="Heure">
+                    <input class="input hour" type="number" step="1" min="0" max="23" placeholder="Heure" title="Heure">
                   </p>
                   <p class="control is-expanded">
-                    <input class="input" type="number" step="1" min="0" max="59" placeholder="Minute" title="Minute">
+                    <input class="input minute" type="number" step="1" min="0" max="59" placeholder="Minute" title="Minute">
                   </p>
                   <p class="control is-expanded">
-                    <input class="input" type="number" step="0.1" min="0.0" max="100.0" placeholder="Quantité" title="Quantité">
+                    <input class="input quantity" type="number" step="0.1" min="0.0" max="100.0" placeholder="Quantité" title="Quantité">
                   </p>
                 </div>
               </div>
             </div>
           </div><!-- .alarm -->
-
-          <button class="update button is-primary is-large is-fullwidth">Mise à jour</button>
-        </article><!-- #alarms -->
-
-        <article id="motor" class="box">
-          <h1 class="title">
-            <i class="fas fa-cog"></i>
-            Moteur
-          </h1>
-          ...
-        </article><!-- #motor -->
+        </template><!-- template -->
 
       </div>
     </section>

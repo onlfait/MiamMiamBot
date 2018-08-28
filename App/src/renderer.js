@@ -81,6 +81,8 @@ function onData (data) {
   let cmd = args.shift()
   if (cmd === 'dateTime') {
     setDateTime(args)
+  } else if (cmd === 'alarm') {
+    setAlarm(args)
   } else if (cmd === 'ok') {
     console.log('ok')
   }
@@ -97,6 +99,7 @@ function connectPort (comName, baudRate=115200, timeout=5000) {
         connected = true
         connecting = false
         getRemoteDateTime()
+        getRemoteAlarms()
         resolve(port)
       } else {
         reject(new Error('Bad fingerprint'))
@@ -157,7 +160,7 @@ let clockTimeout = null
 $clockUpdate.addEventListener('click', updateRemoteDateTime, false)
 
 function setDateTime (args) {
-  let [ D, M, Y, h, m, s ] = args.map(twoDigits)
+  const [ D, M, Y, h, m, s ] = args.map(twoDigits)
   $clockDate.innerText = `${D}/${M}/${Y}`
   $clockTime.innerText = `${h}:${m}:${s}`
 }
@@ -186,4 +189,60 @@ function getRemoteDateTime () {
   if (!port) return
   port.write(`getDateTime\n`)
   clockTimeout = setTimeout(getRemoteDateTime, 1000)
+}
+
+// -----------------------------------------------------------------------------
+// Template
+// -----------------------------------------------------------------------------
+const $template = document.querySelector('template').content
+const $alarmTemplate = $template.querySelector('.alarm')
+
+function appendTemplate ($tpl, $target) {
+  const $node = $tpl.cloneNode(true)
+  $target.appendChild($node)
+  return $node
+}
+
+// -----------------------------------------------------------------------------
+// Alarms
+// -----------------------------------------------------------------------------
+const $alarms = document.getElementById('alarms')
+const $alarmslist = $alarms.querySelector('.alarms')
+const $alarmsDivs = new Map()
+const alarmsCount = 5
+
+function appendAlarm (i) {
+  const $alarm = appendTemplate($alarmTemplate, $alarmslist)
+  const $icon = $alarm.querySelector('.icon i')
+  const $hour = $alarm.querySelector('.hour')
+  const $minute = $alarm.querySelector('.minute')
+  const $quantity = $alarm.querySelector('.quantity')
+  $alarmsDivs.set(i, [ $alarm, $icon, $hour, $minute, $quantity ])
+}
+
+function setAlarm (args) {
+  const [ i, hour, minute, quantity ] = args.map(parseFloat)
+  const [ $alarm, $icon, $hour, $minute, $quantity ] = $alarmsDivs.get(i)
+  $hour.value = hour
+  $minute.value = minute
+  $quantity.value = quantity
+  if (quantity) {
+    $icon.classList.add('fa-bell')
+    $icon.classList.remove('fa-bell-slash')
+  } else {
+    $icon.classList.add('fa-bell-slash')
+    $icon.classList.remove('fa-bell')
+  }
+}
+
+function getRemoteAlarms () {
+  if (!port) return
+  for (var i = 0; i < alarmsCount; i++) {
+    port.write(`getAlarm|${i}\n`)
+  }
+}
+
+for (var i = 0; i < alarmsCount; i++) {
+  appendAlarm(i)
+  setAlarm([i, 0, 0, 0])
 }
