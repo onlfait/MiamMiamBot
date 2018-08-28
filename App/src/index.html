@@ -67,20 +67,49 @@
               <i class="far fa-bell"></i>
               Alarmes
             </h1>
+            <div class="columns has-text-centered is-size-4 is-mobile has-text-grey-light">
+              <div class="column">Heure</div>
+              <div class="column">Minute</div>
+              <div class="column">Quantité</div>
+            </div>
             <div class="alarms"></div>
+            <p class="help is-info has-text-centered"><i class="far fa-question-circle"></i> Laissez la quantité à zero pour désactiver une alarme.</p>
             <br />
             <button class="update button is-primary is-large is-fullwidth">Mise à jour</button>
           </article><!-- #alarms -->
 
-        </div><!-- #connected -->
+          <article id="motor" class="box">
+            <h1 class="title">
+              <i class="fas fa-cog"></i>
+              Moteur
+            </h1>
+            <div class="columns has-text-centered is-size-4 is-mobile has-text-grey-light">
+              <div class="column">Pas par tour</div>
+              <div class="column">Micro-stepping</div>
+              <div class="column">Inverser</div>
+            </div>
+            <div class="motor field is-horizontal">
+              <div class="field-body">
+                <div class="field is-expanded">
+                  <div class="field has-addons">
+                    <p class="control is-expanded">
+                      <input class="input steps" type="number" step="1" min="0" max="800" placeholder="Pas par tour" title="Pas par tour">
+                    </p>
+                    <p class="control is-expanded">
+                      <input class="input microstepping" type="number" step="1" min="0" max="256" placeholder="Micro-stepping" title="Micro-stepping">
+                    </p>
+                    <p class="control is-expanded">
+                      <input class="input inverse" type="number" step="1" min="0" max="1" placeholder="Inverser" title="Inverser">
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div><!-- .motor -->
+            <br />
+            <button class="update button is-primary is-large is-fullwidth">Mise à jour</button>
+          </article><!-- #motor -->
 
-        <article id="motor" class="box">
-          <h1 class="title">
-            <i class="fas fa-cog"></i>
-            Moteur
-          </h1>
-          ...
-        </article><!-- #motor -->
+        </div><!-- #connected -->
 
         <template>
           <div class="alarm field is-horizontal">

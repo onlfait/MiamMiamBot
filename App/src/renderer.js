@@ -83,6 +83,8 @@ function onData (data) {
     setDateTime(args)
   } else if (cmd === 'alarm') {
     setAlarm(args)
+  } else if (cmd === 'motor') {
+    setMotor(args)
   } else if (cmd === 'ok') {
     console.log('ok')
   }
@@ -100,6 +102,7 @@ function connectPort (comName, baudRate=115200, timeout=5000) {
         connecting = false
         getRemoteDateTime()
         getRemoteAlarms()
+        getRemoteMotor()
         resolve(port)
       } else {
         reject(new Error('Bad fingerprint'))
@@ -246,7 +249,7 @@ function setRemoteAlarm (args) {
   port.write(cmd)
 }
 
-function saveRemoteAlarms () {
+function saveRemotSettings () {
   if (!port) return
   console.log('save')
   port.write('save\n')
@@ -257,7 +260,7 @@ function updateRemoteAlarms (save=true) {
     const [ $alarm, $icon, $hour, $minute, $quantity ] = $alarmsDivs.get(i)
     setRemoteAlarm([i, $hour.value, $minute.value, $quantity.value])
   }
-  save && saveRemoteAlarms()
+  save && saveRemotSettings()
   getRemoteAlarms()
 }
 
@@ -270,5 +273,46 @@ function getRemoteAlarms () {
 
 for (var i = 0; i < alarmsCount; i++) {
   appendAlarm(i)
-  setAlarm([i, 0, 0, 0])
+  setAlarm([i, null, null, null])
+}
+
+// -----------------------------------------------------------------------------
+// Moteur
+// -----------------------------------------------------------------------------
+const $motor = document.getElementById('motor')
+const $motorSteps = $motor.querySelector('.steps')
+const $motorMiscroStepping = $motor.querySelector('.microstepping')
+const $motorInverse = $motor.querySelector('.inverse')
+const $motorUpdate = $motor.querySelector('.update')
+
+$motorUpdate.addEventListener('click', updateRemoteMotor, false)
+
+function setMotor (args) {
+  const [ steps, microstepping, inverse ] = args.map(parseFloat)
+  $motorSteps.value = steps
+  $motorMiscroStepping.value = microstepping
+  $motorInverse.value = inverse
+}
+
+function getRemoteMotor () {
+  if (!port) return
+  console.log(`getMotor\n`)
+  port.write(`getMotor\n`)
+}
+
+function setRemoteMotor (args) {
+  if (!port) return
+  // setMotor|steps|microstepping|inverse
+  const cmd = `setMotor|${args.join('|')}\n`
+  console.log(cmd)
+  port.write(cmd)
+}
+
+function updateRemoteMotor (save=true) {
+  setRemoteMotor([
+    $motorSteps.value,
+    $motorMiscroStepping.value,
+    $motorInverse.value]
+  )
+  save && saveRemotSettings()
 }
