@@ -6,95 +6,46 @@
 */
 #include "CommandLine.h"
 
-char* fts (float val) {
-  char tmp[32];
-  return dtostrf(val, 3, 8, tmp);
-}
-
-CommandLine::CommandLine() {
+CommandLine::CommandLine () {
   _commandsCount = 0;
-  _argsCount = 0;
-  _separator = "|";
 }
 
-void CommandLine::begin() {
-  while (!Serial);
-  Serial.begin(BAUD_RATE);
-}
-
-void CommandLine::begin(int baudRate) {
+void CommandLine::begin (unsigned long baudRate) {
   while (!Serial);
   Serial.begin(baudRate);
 }
 
-void CommandLine::send (const char *fmt, ...) {
-  char buf[LINE_BUF_SIZE];
+void CommandLine::addCommand (const char* name, void (*command)()) {
+  if (_commandsCount < COMMAND_LINE_MAX_COMMANDS) {
+    _CommandStruct commandStruct = { name, command };
+    _commandsList[_commandsCount++] = commandStruct;
+  }
+}
+
+void CommandLine::addCommand (const __FlashStringHelper *name, void (*command)()) {
+  addCommand((const char*) name, command);
+}
+
+void CommandLine::send (const char* format, ...) {
+  char buf[COMMAND_LINE_BUFFER_SIZE];
   va_list args;
-  va_start(args, fmt);
-  vsnprintf(buf, LINE_BUF_SIZE, fmt, args);
+  va_start(args, format);
+  vsnprintf(buf, COMMAND_LINE_BUFFER_SIZE, format, args);
   va_end(args);
   Serial.print(buf);
 }
 
-void CommandLine::send (const __FlashStringHelper *fmt, ...) {
-  char buf[LINE_BUF_SIZE];
+void CommandLine::send (const __FlashStringHelper *format, ...) {
+  char buf[COMMAND_LINE_BUFFER_SIZE];
   va_list args;
-  va_start(args, fmt);
+  va_start(args, format);
   #ifdef __AVR__
-    vsnprintf_P(buf, LINE_BUF_SIZE, (const char *)fmt, args);
+    vsnprintf_P(buf, COMMAND_LINE_BUFFER_SIZE, (const char*) format, args);
   #else
-    vsnprintf(buf, LINE_BUF_SIZE, (const char *)fmt, args);
+    vsnprintf(buf, COMMAND_LINE_BUFFER_SIZE, (const char*) format, args);
   #endif
   va_end(args);
   Serial.print(buf);
-}
-
-void CommandLine::addCommand(const char* name, CommandCallback func) {
-  if (_commandsCount < MAX_COMMANDS) {
-    CommandStruct command = { name, func };
-    _commands[_commandsCount++] = command;
-  }
-}
-
-void CommandLine::undefinedCommand(CommandCallback func) {
-  _undefinedCommand = func;
-}
-
-void CommandLine::_parse () {
-  char *argument;
-  _argsCount = 0;
-  char line[LINE_BUF_SIZE + 1];
-
-  strcpy(line, _line);
-  argument = strtok(line, _separator);
-  memset(_args, 0, sizeof(_args));
-
-  while (argument != NULL) {
-    if (_argsCount < MAX_NUM_ARGS) {
-      if (strlen(argument) < ARG_BUF_SIZE) {
-        strcpy(_args[_argsCount], argument);
-        argument = strtok(NULL, _separator);
-        _argsCount++;
-      } else {
-        break;
-      }
-    } else {
-      break;
-    }
-  }
-}
-
-void CommandLine::executeCommand () {
-  for (int i = 0; i < _commandsCount; i++) {
-    CommandStruct command = _commands[i];
-    if (strcmp(_args[0], command.name) == 0) {
-        command.func();
-        return;
-    }
-  }
-  if (_undefinedCommand != NULL) {
-    _undefinedCommand();
-  }
 }
 
 bool CommandLine::read () {
@@ -103,20 +54,18 @@ bool CommandLine::read () {
   while (Serial.available()) {
     char c = Serial.read();
     switch (c) {
-      case CR:
-      case LF:
-        _line[charsRead] = NULLCHAR;
+      case COMMAND_LINE_EOL:
+        _line[charsRead] = COMMAND_LINE_NULLCHAR;
         if (charsRead > 0)  {
           charsRead = 0;
-          _parse();
           return true;
         }
         break;
       default:
-        if (charsRead < LINE_BUF_SIZE) {
+        if (charsRead < COMMAND_LINE_BUFFER_SIZE) {
           _line[charsRead++] = c;
         }
-        _line[charsRead] = NULLCHAR;
+        _line[charsRead] = COMMAND_LINE_NULLCHAR;
         break;
     }
   }
@@ -124,36 +73,37 @@ bool CommandLine::read () {
   return false;
 }
 
-void CommandLine::watch () {
-  if (read()) {
-    executeCommand();
+bool CommandLine::parse () {
+  char *argument;
+  _argsCount = 0;
+  char line[COMMAND_LINE_BUFFER_SIZE + 1];
+
+  strcpy(line, _line);
+  argument = strtok(line, COMMAND_LINE_SEPARATOR);
+  memset(_args, 0, sizeof(_args));
+
+  while (argument != NULL) {
+    if (_argsCount < COMMAND_LINE_MAX_ARGUMENTS) {
+      if (strlen(argument) < COMMAND_LINE_ARG_BUFFER_SIZE) {
+        strcpy(_args[_argsCount], argument);
+        argument = strtok(NULL, COMMAND_LINE_SEPARATOR);
+        _argsCount++;
+      } else {
+        return false;
+      }
+    } else {
+      return false;
+    }
   }
+  return true;
 }
 
-char* CommandLine::getLine () {
-  return _line;
+bool CommandLine::execute () {
+  return true;
 }
 
-bool CommandLine::lineMatch (const char* input) {
-  return strcmp(_line, input) == 0;
-}
-
-bool CommandLine::argMatch (int index, const char* input) {
-  return strcmp(_args[index], input) == 0;
-}
-
-int CommandLine::getArgsCount () {
-  return _argsCount;
-}
-
-char* CommandLine::getArg (int index) {
-  return _args[index];
-}
-
-int CommandLine::getArgAsInt (int index) {
-  return atoi(_args[index]);
-}
-
-float CommandLine::getArgAsFloat (int index) {
-  return atof(_args[index]);
+void CommandLine::watch () {
+  if (read() && parse()) {
+    execute();
+  }
 }

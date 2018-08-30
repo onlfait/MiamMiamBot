@@ -10,55 +10,37 @@
 #include "Arduino.h"
 #include <stdarg.h>
 
-#define BAUD_RATE 115200
-
-#define CR        '\r'
-#define LF        '\n'
-#define NULLCHAR  '\0'
-
-#define LINE_BUF_SIZE 128
-#define ARG_BUF_SIZE   64
-#define MAX_NUM_ARGS    8
-
-#define MAX_COMMANDS 32
-
-typedef void (*CommandCallback) ();
-
-typedef struct {
-  const char* name;
-  CommandCallback func;
-} CommandStruct;
-
-char* fts(float val); // float to string
+#define COMMAND_LINE_MAX_COMMANDS 10
+#define COMMAND_LINE_BUFFER_SIZE 32
+#define COMMAND_LINE_NULLCHAR '\0'
+#define COMMAND_LINE_EOL '\n'
+#define COMMAND_LINE_SEPARATOR "|"
+#define COMMAND_LINE_ARG_BUFFER_SIZE 32
+#define COMMAND_LINE_MAX_ARGUMENTS 8
 
 class CommandLine {
   public:
     CommandLine();
-    void begin();
-    void begin(int baudRate);
-    void undefinedCommand(CommandCallback func);
-    void addCommand(const char* name, CommandCallback func);
+    void begin(unsigned long baudRate);
+    void addCommand(const char* name, void (*command)());
+    void addCommand(const __FlashStringHelper *name, void (*command)());
+    void send(const char* format, ...);
+    void send(const __FlashStringHelper *format, ...);
     bool read();
-    void executeCommand();
+    bool parse();
+    bool execute();
     void watch();
-    void send(const char *fmt, ...);
-    void send(const __FlashStringHelper *fmt, ...);
-    char* getLine();
-    bool lineMatch(const char* input);
-    bool argMatch(int index, const char* input);
-    int getArgsCount();
-    char* getArg(int index);
-    int getArgAsInt(int index);
-    float getArgAsFloat(int index);
   private:
-    char _line[LINE_BUF_SIZE + 1];
-    char _args[MAX_NUM_ARGS][ARG_BUF_SIZE];
-    CommandStruct _commands[MAX_COMMANDS];
-    CommandCallback _undefinedCommand;
-    int _argsCount;
-    int _commandsCount;
-    const char* _separator;
-    void _parse();
+    typedef void (*_Command)();
+    typedef struct {
+      const char* name;
+      _Command func;
+    } _CommandStruct;
+    uint8_t _commandsCount;
+    _CommandStruct _commandsList[COMMAND_LINE_MAX_COMMANDS];
+    char _line[COMMAND_LINE_BUFFER_SIZE + 1];
+    uint8_t _argsCount;
+    char _args[COMMAND_LINE_MAX_ARGUMENTS][COMMAND_LINE_ARG_BUFFER_SIZE];
 };
 
 #endif
