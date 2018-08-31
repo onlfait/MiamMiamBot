@@ -1,8 +1,8 @@
 /*
-* CommandLine.cpp - Part of MiamMiam Firmware
-* Created by Sébastien Mischler & Raymond Humbert
-* Released into the public domain
-* http://www.onlfait.ch/MiamMiam
+ *CommandLine.cpp - Part of MiamMiam Firmware
+ *Created by Sébastien Mischler & Raymond Humbert
+ *Released into the public domain
+ *http://www.onlfait.ch/MiamMiam
 */
 #include "CommandLine.h"
 
@@ -27,30 +27,30 @@ void CommandLine::send (const __FlashStringHelper *format, ...) {
   va_list args;
   va_start(args, format);
   #ifdef __AVR__
-    vsnprintf_P(buf, COMMAND_LINE_BUFFER_SIZE, (const char *) format, args);
+    vsnprintf_P(buf, COMMAND_LINE_BUFFER_SIZE, (const char*) format, args);
   #else
-    vsnprintf(buf, COMMAND_LINE_BUFFER_SIZE, (const char *) format, args);
+    vsnprintf(buf, COMMAND_LINE_BUFFER_SIZE, (const char*) format, args);
   #endif
   va_end(args);
   Serial.print(buf);
 }
 
-void CommandLine::defaultCommand (void (*command)(uint8_t argc, char **argv)) {
-  _defaultCommand = command;
+void CommandLine::defaultCommand (CommandLineCallback callback) {
+  _defaultCommand = callback;
 }
 
-bool CommandLine::addCommand (const char* name, void (*command)(uint8_t argc, char **argv)) {
+bool CommandLine::addCommand (const char *name, CommandLineCallback callback) {
   static uint8_t commandsCount = 0;
   if (commandsCount < COMMAND_LINE_MAX_COMMANDS) {
-    _CommandStruct commandStruct = { name, command };
+    CommandLineCallbackStruct commandStruct = { name, callback };
     _commandsList[commandsCount++] = commandStruct;
     return true;
   }
   return false;
 }
 
-bool CommandLine::addCommand (const __FlashStringHelper *name, void (*command)(uint8_t argc, char **argv)) {
-  return addCommand((const char*) name, command);
+bool CommandLine::addCommand (const __FlashStringHelper *name, CommandLineCallback callback) {
+  return addCommand((const char*) name, callback);
 }
 
 bool CommandLine::read () {
@@ -87,10 +87,10 @@ bool CommandLine::parse () {
   } while ((argc < COMMAND_LINE_MAX_ARGS) && (argv[argc] != NULL));
   uint8_t count = sizeof(_commandsList)/sizeof(_commandsList[0]);
   for (uint8_t i = 0; i < count; i++) {
-    _CommandStruct command = _commandsList[i];
+    CommandLineCallbackStruct command = _commandsList[i];
     if (strcmp(argv[0], command.name) == 0
     || strcmp_P(argv[0], command.name) == 0) {
-      command.func(argc, argv);
+      command.callback(argc, argv);
       return true;
     }
   }
