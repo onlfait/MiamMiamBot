@@ -30,14 +30,11 @@ class CommandLine {
     void begin(unsigned long baudRate);
     void send(const char *format, ...);
     void send(const __FlashStringHelper *format, ...);
+    void defaultCommand(CommandLineCallback callback);
     bool addCommand(const char *name, CommandLineCallback callback);
     bool addCommand(const __FlashStringHelper *name, CommandLineCallback callback);
-    void defaultCommand(CommandLineCallback callback);
-    bool read();
-    bool parse();
     bool watch();
   private:
-    char _line[COMMAND_LINE_BUFFER_SIZE + 1];
     CommandLineCallback _defaultCommand;
     CommandLineCallbackStruct _commandsList[COMMAND_LINE_MAX_COMMANDS];
 };

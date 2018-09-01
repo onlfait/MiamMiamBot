@@ -53,35 +53,37 @@ bool CommandLine::addCommand (const __FlashStringHelper *name, CommandLineCallba
   return addCommand((const char*) name, callback);
 }
 
-bool CommandLine::read () {
+bool CommandLine::watch () {
+  // read
+  char c;
   static uint8_t offset = 0;
+  static char buffer[COMMAND_LINE_BUFFER_SIZE + 1];
   while (Serial.available()) {
-    char c = Serial.read();
-    switch (c) {
-      case COMMAND_LINE_EOL:
-        _line[offset] = COMMAND_LINE_NULLCHAR;
-        if (offset > 0)  {
-          offset = 0;
-          return true;
-        }
+    c = Serial.read();
+    if (offset < COMMAND_LINE_BUFFER_SIZE) {
+      if (c == COMMAND_LINE_EOL) {
+        buffer[offset] = COMMAND_LINE_NULLCHAR;
         break;
-      default:
-        if (offset < COMMAND_LINE_BUFFER_SIZE) {
-          _line[offset++] = c;
-        }
-        _line[offset] = COMMAND_LINE_NULLCHAR;
-        break;
+      }
+      buffer[offset] = c;
+      buffer[offset + 1] = COMMAND_LINE_NULLCHAR;
     }
+    offset++;
   }
-
-  return false;
-}
-
-bool CommandLine::parse () {
+  if (offset >= COMMAND_LINE_BUFFER_SIZE) {
+    if (c == COMMAND_LINE_EOL) {
+      offset = 0;
+    }
+    return false;
+  }
+  if (c != COMMAND_LINE_EOL) {
+    return false;
+  }
+  offset = 0;
+  // parse
   uint8_t argc = 0;
   char *argv[COMMAND_LINE_MAX_ARGS];
-  char buf[COMMAND_LINE_BUFFER_SIZE];
-  argv[argc] = strtok(_line, COMMAND_LINE_ARGS_SEPARATOR);
+  argv[argc] = strtok(buffer, COMMAND_LINE_ARGS_SEPARATOR);
   do {
     argv[++argc] = strtok(NULL, COMMAND_LINE_ARGS_SEPARATOR);
   } while ((argc < COMMAND_LINE_MAX_ARGS) && (argv[argc] != NULL));
@@ -98,8 +100,4 @@ bool CommandLine::parse () {
     _defaultCommand(argc, argv);
   }
   return false;
-}
-
-bool CommandLine::watch () {
-  return read() && parse();
 }

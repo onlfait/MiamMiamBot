@@ -35,7 +35,7 @@ void setup () {
   commandLine.addCommand(F("save"), saveSettingsCommand);   // save
 
   // Envoie la bannière du firmware
-  commandLine.send(F("MiamMiamBot#yolo\n"));
+  getBannerCommand(1, NULL);
 }
 
 // -----------------------------------------------------------------------------
@@ -70,7 +70,7 @@ bool valid (uint8_t provided, uint8_t expected) {
 // -----------------------------------------------------------------------------
 void getBannerCommand (uint8_t argc, char **argv) {
   if (!valid(argc, 1)) return;
-  ok();
+  commandLine.send(F("MiamMiamBot#yolo\n"));
 }
 
 void setTimeCommand (uint8_t argc, char **argv) {
