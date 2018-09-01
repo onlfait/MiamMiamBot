@@ -7,12 +7,14 @@
 
 // Librairies
 #include "CommandLine.h"
+#include "Scheduler.h"
 
 // Configuration
 #define BAUD_RATE 115200
 
 // Initialisation des variables
 CommandLine commandLine;
+Scheduler scheduler;
 
 // -----------------------------------------------------------------------------
 // Initialisation du programme
@@ -33,6 +35,10 @@ void setup () {
   commandLine.addCommand(F("setMotor"), setMotorCommand);   // setMotor|steps|microstepping|reverse
   commandLine.addCommand(F("getMotor"), getMotorCommand);   // getMotor
   commandLine.addCommand(F("save"), saveSettingsCommand);   // save
+
+  // Ajoute les alarmes
+  SchedulerAlarmStruct alarm = { 17, 42, 5 };
+  scheduler.setAlarm(0, alarm);
 
   // Envoie la bannière du firmware
   getBannerCommand(1, NULL);
