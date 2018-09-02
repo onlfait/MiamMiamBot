@@ -11,6 +11,8 @@
 #define SCHEDULER_RTC            1  // 1 = DS1307, 2 = DS3231, 3 = PCF8523
 #define MOTOR_STEPS            200  // Step par tour
 #define MOTOR_MICROSTEPPING      1  // Microstepping [1, 2, 4, 8, 16, ...]
+#define MOTOR_MAX_SPEED        500  // Steps par secondes
+#define MOTOR_ACCELERATION     500  // Steps par secondes par secondes
 #define MOTOR_EN_PIN             4  // Enable Pin
 #define MOTOR_STEP_PIN           5  // Step pin
 #define MOTOR_DIR_PIN            6  // Direction pin

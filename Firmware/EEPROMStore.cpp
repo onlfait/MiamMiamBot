@@ -10,9 +10,11 @@ EEPROMStore::EEPROMStore () {
   data = (EEPROMStore_t) {
     // Store hash
     EEPROM_STORE_HASH,
-    // Moteur { steps, microstepping, invertDir, invertStep, ivertEn }
+    // Moteur
     {
       MOTOR_STEPS,
+      MOTOR_MAX_SPEED,
+      MOTOR_ACCELERATION,
       MOTOR_MICROSTEPPING,
       MOTOR_DIR_INV,
       MOTOR_STEP_INV,

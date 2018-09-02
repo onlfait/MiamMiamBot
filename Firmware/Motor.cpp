@@ -11,14 +11,21 @@ AccelStepper stepper (AccelStepper::DRIVER, MOTOR_STEP_PIN, MOTOR_DIR_PIN);
 Motor::Motor () {
   _motor = {
     MOTOR_STEPS,
+    MOTOR_MAX_SPEED,
+    MOTOR_ACCELERATION,
     MOTOR_MICROSTEPPING,
     MOTOR_DIR_INV,
     MOTOR_STEP_INV,
     MOTOR_EN_INV
   };
+  stepper.setEnablePin(MOTOR_EN_PIN);
+  _update();
+  disable();
 }
 
-void Motor::_updatePinsInverted () {
+void Motor::_update () {
+  stepper.setMaxSpeed((float) _motor.maxSpeed);
+  stepper.setAcceleration((float) _motor.acceleration);
   stepper.setPinsInverted(
     (bool) _motor.invertDirPin,
     (bool) _motor.invertStepPin,
@@ -26,17 +33,9 @@ void Motor::_updatePinsInverted () {
   );
 }
 
-void Motor::begin () {
-  stepper.setEnablePin(MOTOR_EN_PIN);
-  stepper.setMaxSpeed(400);     // step/s
-  stepper.setAcceleration(400); // step/s/s
-  _updatePinsInverted();
-  disable();
-}
-
 void Motor::setMotor (Motor_t motor) {
   _motor = motor;
-  _updatePinsInverted();
+  _update();
 }
 
 void Motor::enable () {
@@ -48,7 +47,6 @@ void Motor::disable () {
 }
 
 void Motor::move (long steps) {
-  Serial.println(steps);
   stepper.move(steps);
   enable();
 }

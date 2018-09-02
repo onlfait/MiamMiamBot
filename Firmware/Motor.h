@@ -38,12 +38,22 @@
   #define MOTOR_STEPS 200
 #endif
 
+#ifndef MOTOR_MAX_SPEED
+  #define MOTOR_MAX_SPEED 500
+#endif
+
+#ifndef MOTOR_ACCELERATION
+  #define MOTOR_ACCELERATION 500
+#endif
+
 #ifndef MOTOR_MICROSTEPPING
   #define MOTOR_MICROSTEPPING 1
 #endif
 
 struct Motor_t {
   unsigned int steps;
+  unsigned int maxSpeed;
+  unsigned int acceleration;
   uint8_t microstepping;
   uint8_t invertDirPin;
   uint8_t invertStepPin;
@@ -53,7 +63,6 @@ struct Motor_t {
 class Motor {
   public:
     Motor();
-    void begin();
     void setMotor(Motor_t motor);
     void enable();
     void disable();
@@ -61,7 +70,7 @@ class Motor {
     void watch();
   private:
     Motor_t _motor;
-    void _updatePinsInverted();
+    void _update();
 };
 
 #endif

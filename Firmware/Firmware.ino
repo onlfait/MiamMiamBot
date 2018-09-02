@@ -46,9 +46,6 @@ void setup () {
   // Démarrage du magasin (config)
   store.begin();
 
-  // Démarrage du moteur
-  motor.begin();
-
   // Initialisation du moteur
   motor.setMotor(store.data.motor);
 
@@ -154,23 +151,28 @@ void getAlarmCommand (uint8_t argc, char **argv) {
 }
 
 void setMotorCommand (uint8_t argc, char **argv) {
-  if (!hasArgumentCount(argc, 6)) return;
-  Motor_t motor = {
+  if (!hasArgumentCount(argc, 8)) return;
+  Motor_t newMotor = {
     (unsigned int) atoi(argv[1]),
-    (uint8_t) atoi(argv[2]),
-    (uint8_t) atoi(argv[3]),
+    (unsigned int) atoi(argv[2]),
+    (unsigned int) atoi(argv[3]),
     (uint8_t) atoi(argv[4]),
-    (uint8_t) atoi(argv[5])
+    (uint8_t) atoi(argv[5]),
+    (uint8_t) atoi(argv[6]),
+    (uint8_t) atoi(argv[7])
   };
-  store.setMotor(motor);
+  store.setMotor(newMotor);
+  motor.setMotor(newMotor);
   sendOk();
 }
 
 void getMotorCommand (uint8_t argc, char **argv) {
   if (!hasArgumentCount(argc, 1)) return;
   commandLine.send(
-    F("motor|%d|%d|%d|%d|%d\n"),
+    F("motor|%u|%u|%u|%d|%d|%d|%d\n"),
     store.data.motor.steps,
+    store.data.motor.maxSpeed,
+    store.data.motor.acceleration,
     store.data.motor.microstepping,
     store.data.motor.invertDirPin,
     store.data.motor.invertStepPin,
