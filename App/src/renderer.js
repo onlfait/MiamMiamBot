@@ -87,6 +87,8 @@ function onData (data) {
     setMotor(args)
   } else if (cmd === 'ok') {
     console.log('ok')
+  } else {
+    console.log('undefined command:', { cmd, args })
   }
 }
 
@@ -170,8 +172,8 @@ function setDateTime (args) {
 
 function setRemoteDateTime (args) {
   if (!port) return
-  // setDateTime|yyyy|mm|dd|hh|mm|ss
-  const cmd = `setDateTime|${args.join('|')}\n`
+  // setDateTime|dd|mm|yyyy|hh|mm|ss
+  const cmd = `setTime|${args.join('|')}\n`
   console.log(cmd)
   port.write(cmd)
 }
@@ -179,9 +181,9 @@ function setRemoteDateTime (args) {
 function updateRemoteDateTime () {
   const d = new Date()
   setRemoteDateTime([
-    d.getFullYear(),
-    d.getMonth() + 1,
     d.getDate(),
+    d.getMonth() + 1,
+    d.getFullYear(),
     d.getHours(),
     d.getMinutes(),
     d.getSeconds()
@@ -190,7 +192,7 @@ function updateRemoteDateTime () {
 
 function getRemoteDateTime () {
   if (!port) return
-  port.write(`getDateTime\n`)
+  port.write(`getTime\n`)
   clockTimeout = setTimeout(getRemoteDateTime, 1000)
 }
 
@@ -316,3 +318,19 @@ function updateRemoteMotor (save=true) {
   )
   save && saveRemotSettings()
 }
+
+// -----------------------------------------------------------------------------
+// Inputs
+// -----------------------------------------------------------------------------
+document.querySelectorAll('input[min], input[max]').forEach($input => {
+  $input.addEventListener('change', e => {
+    const min = parseInt($input.getAttribute('min'))
+    const max = parseInt($input.getAttribute('max'))
+    const val = parseInt($input.value)
+    if (val > max) {
+      $input.value = max
+    } else if (val < min) {
+      $input.value = min
+    }
+  })
+})

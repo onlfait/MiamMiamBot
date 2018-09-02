@@ -1,5 +1,5 @@
 /*
-* CommandLine.h - Part of MiamMiam Firmware
+* CommandLine.h - Part of MiamMiamBot Firmware
 * Created by Sébastien Mischler & Raymond Humbert
 * Released into the public domain
 * http://www.onlfait.ch/MiamMiam
@@ -16,13 +16,12 @@
 #define COMMAND_LINE_NULLCHAR '\0'
 #define COMMAND_LINE_EOL '\n'
 
-typedef void (*CommandLineCallback) (uint8_t argc, char **argv);
+typedef void (*CommandLineCallback_f) (uint8_t argc, char **argv);
 
-typedef struct {
+struct CommandLineCallback_t {
   const char *name;
-  CommandLineCallback callback;
-} CommandLineCallbackStruct;
-
+  CommandLineCallback_f callback;
+};
 
 class CommandLine {
   public:
@@ -30,13 +29,13 @@ class CommandLine {
     void begin(unsigned long baudRate);
     void send(const char *format, ...);
     void send(const __FlashStringHelper *format, ...);
-    void defaultCommand(CommandLineCallback callback);
-    bool addCommand(const char *name, CommandLineCallback callback);
-    bool addCommand(const __FlashStringHelper *name, CommandLineCallback callback);
+    void defaultCommand(CommandLineCallback_f callback);
+    bool addCommand(const char *name, CommandLineCallback_f callback);
+    bool addCommand(const __FlashStringHelper *name, CommandLineCallback_f callback);
     bool watch();
   private:
-    CommandLineCallback _defaultCommand;
-    CommandLineCallbackStruct _commandsList[COMMAND_LINE_MAX_COMMANDS];
+    CommandLineCallback_f _defaultCommand;
+    CommandLineCallback_t _commandsList[COMMAND_LINE_MAX_COMMANDS];
 };
 
 #endif

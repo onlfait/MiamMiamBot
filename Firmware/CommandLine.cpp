@@ -1,5 +1,5 @@
 /*
- *CommandLine.cpp - Part of MiamMiam Firmware
+ *CommandLine.cpp - Part of MiamMiamBot Firmware
  *Created by Sébastien Mischler & Raymond Humbert
  *Released into the public domain
  *http://www.onlfait.ch/MiamMiam
@@ -35,21 +35,21 @@ void CommandLine::send (const __FlashStringHelper *format, ...) {
   Serial.print(buf);
 }
 
-void CommandLine::defaultCommand (CommandLineCallback callback) {
+void CommandLine::defaultCommand (CommandLineCallback_f callback) {
   _defaultCommand = callback;
 }
 
-bool CommandLine::addCommand (const char *name, CommandLineCallback callback) {
+bool CommandLine::addCommand (const char *name, CommandLineCallback_f callback) {
   static uint8_t commandsCount = 0;
   if (commandsCount < COMMAND_LINE_MAX_COMMANDS) {
-    CommandLineCallbackStruct commandStruct = { name, callback };
+    CommandLineCallback_t commandStruct = { name, callback };
     _commandsList[commandsCount++] = commandStruct;
     return true;
   }
   return false;
 }
 
-bool CommandLine::addCommand (const __FlashStringHelper *name, CommandLineCallback callback) {
+bool CommandLine::addCommand (const __FlashStringHelper *name, CommandLineCallback_f callback) {
   return addCommand((const char*) name, callback);
 }
 
@@ -89,7 +89,7 @@ bool CommandLine::watch () {
   } while ((argc < COMMAND_LINE_MAX_ARGS) && (argv[argc] != NULL));
   uint8_t count = sizeof(_commandsList)/sizeof(_commandsList[0]);
   for (uint8_t i = 0; i < count; i++) {
-    CommandLineCallbackStruct command = _commandsList[i];
+    CommandLineCallback_t command = _commandsList[i];
     if (strcmp(argv[0], command.name) == 0
     || strcmp_P(argv[0], command.name) == 0) {
       command.callback(argc, argv);
