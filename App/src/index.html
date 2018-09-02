@@ -62,6 +62,19 @@
             <button class="update button is-primary is-large is-fullwidth">Mise à jour</button>
           </article><!-- #clock -->
 
+          <article id="feed" class="box">
+            <h1 class="title">
+              <i class="fas fa-utensils"></i>
+              Nourrir
+            </h1>
+            <div class="field">
+              <p class="control is-expanded">
+                <input class="input quantity" type="number" step="1" min="1" max="255" placeholder="Quantité" title="Quantité">
+              </p>
+            </div>
+            <button class="feed button is-primary is-large is-fullwidth">Envoyer</button>
+          </article><!-- #feed -->
+
           <article id="alarms" class="box">
             <h1 class="title">
               <i class="far fa-bell"></i>
@@ -83,28 +96,83 @@
               <i class="fas fa-cog"></i>
               Moteur
             </h1>
-            <div class="columns has-text-centered is-size-4 is-mobile has-text-grey-light">
-              <div class="column">Pas par tour</div>
-              <div class="column">Micro-stepping</div>
-              <div class="column">Inverser</div>
+            <div class="field">
+              <label class="label">Nombre de pas par quantité</label>
+              <p class="control is-expanded">
+                <input class="input steps" type="number" step="1" min="0" max="800" placeholder="Pas par quantité" title="Pas par quantité">
+              </p>
             </div>
-            <div class="motor field is-horizontal">
-              <div class="field-body">
-                <div class="field is-expanded">
-                  <div class="field has-addons">
-                    <p class="control is-expanded">
-                      <input class="input steps" type="number" step="1" min="0" max="800" placeholder="Pas par tour" title="Pas par tour">
-                    </p>
-                    <p class="control is-expanded">
-                      <input class="input microstepping" type="number" step="1" min="1" max="128" placeholder="Micro-stepping" title="Micro-stepping">
-                    </p>
-                    <p class="control is-expanded">
-                      <input class="input inverse" type="number" step="1" min="0" max="1" placeholder="Inverser" title="Inverser">
-                    </p>
-                  </div>
+            <div class="field">
+              <label class="label">Vitesse max. (steps/s)</label>
+              <p class="control is-expanded">
+                <input class="input maxSpeed" type="number" step="10" min="10" max="1000" placeholder="Vitesse max." title="Vitesse max.">
+              </p>
+            </div>
+            <div class="field">
+              <label class="label">Accélération (steps/s/s)</label>
+              <p class="control is-expanded">
+                <input class="input acceleration" type="number" step="10" min="10" max="10000" placeholder="Accélération" title="Accélération">
+              </p>
+            </div>
+            <div class="field">
+              <label class="label">Inverser sense de rotation</label>
+              <p class="control">
+                <div class="select is-rounded">
+                  <select class="invertDir">
+                    <option value="0">Non</option>
+                    <option value="1">Oui</option>
+                  </select>
                 </div>
-              </div>
-            </div><!-- .motor -->
+              </p>
+            </div>
+            <div class="field">
+              <label class="label">Micro pas</label>
+              <p class="control">
+                <div class="select is-rounded">
+                  <select class="microstepping">
+                    <option value="1">1/1</option>
+                    <option value="2">1/2</option>
+                    <option value="4">1/4</option>
+                    <option value="8">1/8</option>
+                    <option value="16">1/16</option>
+                  </select>
+                </div>
+              </p>
+            </div>
+            <hr />
+            <div class="field">
+              <label class="label">Inverser "DIR" pin</label>
+              <p class="control">
+                <div class="select is-rounded">
+                  <select class="invertDirPin">
+                    <option value="0">Non</option>
+                    <option value="1">Oui</option>
+                  </select>
+                </div>
+              </p>
+            </div>
+            <div class="field">
+              <label class="label">Inverser "STEP" pin</label>
+              <p class="control">
+                <div class="select is-rounded">
+                  <select class="invertStepPin">
+                    <option value="0">Non</option>
+                    <option value="1">Oui</option>
+                  </select>
+                </div>
+              </p>
+            </div>
+            <div class="field">
+              <label class="label">Inverser "EN" pin</label>
+              <p class="control">
+                <div class="select is-rounded">
+                  <select class="invertEnPin">
+                    <option value="0">Non</option>
+                    <option value="1">Oui</option>
+                  </select>
+                </div>
+              </p>
+            </div>
             <br />
             <button class="update button is-primary is-large is-fullwidth">Mise à jour</button>
           </article><!-- #motor -->

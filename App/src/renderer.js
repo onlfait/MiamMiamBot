@@ -279,21 +279,61 @@ for (var i = 0; i < alarmsCount; i++) {
 }
 
 // -----------------------------------------------------------------------------
+// Nourrir
+// -----------------------------------------------------------------------------
+const $feed = document.getElementById('feed')
+const $feedQuantity = $feed.querySelector('.quantity')
+const $feedButton = $feed.querySelector('.feed')
+
+$feedButton.addEventListener('click', feed, false)
+
+function feedRemote (quantity) {
+  if (!port) return
+  // feed|quantity
+  const cmd = `feed|${quantity}\n`
+  console.log(cmd)
+  port.write(cmd)
+}
+
+function feed () {
+  feedRemote($feedQuantity.value)
+}
+
+// -----------------------------------------------------------------------------
 // Moteur
 // -----------------------------------------------------------------------------
 const $motor = document.getElementById('motor')
 const $motorSteps = $motor.querySelector('.steps')
+const $motorMaxSpeed = $motor.querySelector('.maxSpeed')
+const $motorAcceleration = $motor.querySelector('.acceleration')
 const $motorMiscroStepping = $motor.querySelector('.microstepping')
-const $motorInverse = $motor.querySelector('.inverse')
+const $motorInvertDirPin = $motor.querySelector('.invertDirPin')
+const $motorInvertStepPin = $motor.querySelector('.invertStepPin')
+const $motorInvertEnPin = $motor.querySelector('.invertEnPin')
+const $motorInvertDir = $motor.querySelector('.invertDir')
 const $motorUpdate = $motor.querySelector('.update')
 
 $motorUpdate.addEventListener('click', updateRemoteMotor, false)
 
 function setMotor (args) {
-  const [ steps, microstepping, inverse ] = args.map(parseFloat)
+  const [
+    steps,
+    maxSpeed,
+    acceleration,
+    microstepping,
+    invertDirPin,
+    invertStepPin,
+    invertEnPin,
+    invertDir
+  ] = args.map(parseFloat)
   $motorSteps.value = steps
+  $motorMaxSpeed.value = maxSpeed
+  $motorAcceleration.value = acceleration
   $motorMiscroStepping.value = microstepping
-  $motorInverse.value = inverse
+  $motorInvertDirPin.value = invertDirPin
+  $motorInvertStepPin.value = invertStepPin
+  $motorInvertEnPin.value = invertEnPin
+  $motorInvertDir.value = invertDir
 }
 
 function getRemoteMotor () {
@@ -304,7 +344,7 @@ function getRemoteMotor () {
 
 function setRemoteMotor (args) {
   if (!port) return
-  // setMotor|steps|microstepping|inverse
+  // setMotor|steps|maxSpeed|acceleration|microstepping|invertDirPin|invertStepPin|invertEnPin|invertDir
   const cmd = `setMotor|${args.join('|')}\n`
   console.log(cmd)
   port.write(cmd)
@@ -313,9 +353,14 @@ function setRemoteMotor (args) {
 function updateRemoteMotor (save=true) {
   setRemoteMotor([
     $motorSteps.value,
+    $motorMaxSpeed.value,
+    $motorAcceleration.value,
     $motorMiscroStepping.value,
-    $motorInverse.value]
-  )
+    $motorInvertDirPin.value,
+    $motorInvertStepPin.value,
+    $motorInvertEnPin.value,
+    $motorInvertDir.value
+  ])
   save && saveRemotSettings()
 }
 

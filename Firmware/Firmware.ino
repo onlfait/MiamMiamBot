@@ -38,7 +38,7 @@ void setup () {
   commandLine.addCommand(F("getTime"), getDateTimeCommand); // getTime
   commandLine.addCommand(F("setAlarm"), setAlarmCommand);   // setAlarm|index|hh|mm|quantity
   commandLine.addCommand(F("getAlarm"), getAlarmCommand);   // getAlarm
-  commandLine.addCommand(F("setMotor"), setMotorCommand);   // setMotor|steps|microstepping|reverse
+  commandLine.addCommand(F("setMotor"), setMotorCommand);   // setMotor|steps|maxSpeed|acceleration|microstepping|invertDirPin|invertStepPin|invertEnPin|invertDir
   commandLine.addCommand(F("getMotor"), getMotorCommand);   // getMotor
   commandLine.addCommand(F("save"), saveSettingsCommand);   // save
   commandLine.addCommand(F("feed"), feedCommand);           // feed|quantity
@@ -151,7 +151,7 @@ void getAlarmCommand (uint8_t argc, char **argv) {
 }
 
 void setMotorCommand (uint8_t argc, char **argv) {
-  if (!hasArgumentCount(argc, 8)) return;
+  if (!hasArgumentCount(argc, 9)) return;
   Motor_t newMotor = {
     (unsigned int) atoi(argv[1]),
     (unsigned int) atoi(argv[2]),
@@ -159,7 +159,8 @@ void setMotorCommand (uint8_t argc, char **argv) {
     (uint8_t) atoi(argv[4]),
     (uint8_t) atoi(argv[5]),
     (uint8_t) atoi(argv[6]),
-    (uint8_t) atoi(argv[7])
+    (uint8_t) atoi(argv[7]),
+    (uint8_t) atoi(argv[8])
   };
   store.setMotor(newMotor);
   motor.setMotor(newMotor);
@@ -169,14 +170,15 @@ void setMotorCommand (uint8_t argc, char **argv) {
 void getMotorCommand (uint8_t argc, char **argv) {
   if (!hasArgumentCount(argc, 1)) return;
   commandLine.send(
-    F("motor|%u|%u|%u|%d|%d|%d|%d\n"),
+    F("motor|%u|%u|%u|%d|%d|%d|%d|%d\n"),
     store.data.motor.steps,
     store.data.motor.maxSpeed,
     store.data.motor.acceleration,
     store.data.motor.microstepping,
     store.data.motor.invertDirPin,
     store.data.motor.invertStepPin,
-    store.data.motor.invertEnPin
+    store.data.motor.invertEnPin,
+    store.data.motor.invertDir
   );
 }
 
@@ -188,7 +190,7 @@ void saveSettingsCommand (uint8_t argc, char **argv) {
 
 void feedCommand (uint8_t argc, char **argv) {
   if (!hasArgumentCount(argc, 2)) return;
-  motor.move(atol(argv[1]));
+  motor.feed(atol(argv[1]));
   sendOk();
 }
 
@@ -201,4 +203,5 @@ void defaultCommand(uint8_t argc, char **argv) {
 // -----------------------------------------------------------------------------
 void alarmCallback (uint8_t index, SchedulerAlarm_t alarm) {
   sendAlarm(index, alarm); // DEBUG
+  motor.feed(alarm.quantity);
 }

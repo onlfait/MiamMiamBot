@@ -16,9 +16,10 @@ EEPROMStore::EEPROMStore () {
       MOTOR_MAX_SPEED,
       MOTOR_ACCELERATION,
       MOTOR_MICROSTEPPING,
-      MOTOR_DIR_INV,
-      MOTOR_STEP_INV,
-      MOTOR_EN_INV
+      MOTOR_DIR_PIN_INVERT,
+      MOTOR_STEP_PIN_INVERT,
+      MOTOR_EN_PIN_INVERT,
+      MOTOR_DIR_INVERT
     },
     // Alarmes { hour, minute, quantity }
     { 0, 0, 0 },

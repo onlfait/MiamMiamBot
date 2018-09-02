@@ -22,16 +22,20 @@
   #define MOTOR_DIR_PIN 6
 #endif
 
-#ifndef MOTOR_EN_INV
-  #define MOTOR_EN_INV 1
+#ifndef MOTOR_EN_PIN_INVERT
+  #define MOTOR_EN_PIN_INVERT 1
 #endif
 
-#ifndef MOTOR_STEP_INV
-  #define MOTOR_STEP_INV 0
+#ifndef MOTOR_STEP_PIN_INVERT
+  #define MOTOR_STEP_PIN_INVERT 0
 #endif
 
-#ifndef MOTOR_DIR_INV
-  #define MOTOR_DIR_INV 0
+#ifndef MOTOR_DIR_PIN_INVERT
+  #define MOTOR_DIR_PIN_INVERT 0
+#endif
+
+#ifndef MOTOR_DIR_INVERT
+  #define MOTOR_DIR_INVERT 0
 #endif
 
 #ifndef MOTOR_STEPS
@@ -58,6 +62,7 @@ struct Motor_t {
   uint8_t invertDirPin;
   uint8_t invertStepPin;
   uint8_t invertEnPin;
+  uint8_t invertDir;
 };
 
 class Motor {
@@ -67,6 +72,7 @@ class Motor {
     void enable();
     void disable();
     void move(long steps);
+    void feed(uint8_t quantity);
     void watch();
   private:
     Motor_t _motor;

@@ -14,9 +14,10 @@ Motor::Motor () {
     MOTOR_MAX_SPEED,
     MOTOR_ACCELERATION,
     MOTOR_MICROSTEPPING,
-    MOTOR_DIR_INV,
-    MOTOR_STEP_INV,
-    MOTOR_EN_INV
+    MOTOR_DIR_PIN_INVERT,
+    MOTOR_STEP_PIN_INVERT,
+    MOTOR_EN_PIN_INVERT,
+    MOTOR_DIR_INVERT
   };
   stepper.setEnablePin(MOTOR_EN_PIN);
   _update();
@@ -24,8 +25,8 @@ Motor::Motor () {
 }
 
 void Motor::_update () {
-  stepper.setMaxSpeed((float) _motor.maxSpeed);
-  stepper.setAcceleration((float) _motor.acceleration);
+  stepper.setMaxSpeed((float) (_motor.maxSpeed * _motor.microstepping));
+  stepper.setAcceleration((float) (_motor.acceleration * _motor.microstepping));
   stepper.setPinsInverted(
     (bool) _motor.invertDirPin,
     (bool) _motor.invertStepPin,
@@ -47,8 +48,15 @@ void Motor::disable () {
 }
 
 void Motor::move (long steps) {
-  stepper.move(steps);
+  if (_motor.invertDir) {
+    steps = -steps;
+  }
+  stepper.move(steps * _motor.microstepping);
   enable();
+}
+
+void Motor::feed(uint8_t quantity) {
+  move((long) (quantity * _motor.steps));
 }
 
 void Motor::watch () {
