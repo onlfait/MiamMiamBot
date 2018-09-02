@@ -1,3 +1,0 @@
-# MiamMiamBot Firmware
-
-## [WIP] Work In Progress...
