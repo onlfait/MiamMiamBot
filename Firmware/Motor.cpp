@@ -60,8 +60,19 @@ void Motor::feed(uint8_t quantity) {
 }
 
 void Motor::watch () {
+  static unsigned int steps = 0;
+  const unsigned int ratio = _motor.steps * _motor.microstepping;
+
   if (stepper.distanceToGo() == 0) {
+    steps = 0;
     disable();
   }
-  stepper.run();
+
+  if (stepper.run()) {
+    if ((steps % ratio) == 0) {
+      Serial.println("go back!");
+    } else {
+      steps++;
+    }
+  }
 }
